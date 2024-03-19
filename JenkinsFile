@@ -1,8 +1,9 @@
+def choices = []
 pipeline {
     agent any
-    parameters {
+    /* parameters {
         choice(name: 'BRANCH_NAME', choices: [], description: 'Select a branch to build')
-    }
+    } */
     stages {
         stage('Fetch Branches') {
             steps {
