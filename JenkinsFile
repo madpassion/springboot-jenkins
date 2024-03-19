@@ -9,12 +9,24 @@ pipeline {
             steps {
                 script {
                     // Fetch branches from GitHub API
-                    def response = httpRequest(
+                   /*  def response = httpRequest(
                         url: "https://api.github.com/repos/madpassion/springboot-jenkins/branches",
                         httpMode: 'GET',
                         authentication: 'my-git-id'
                     )
-                    def branches = new groovy.json.JsonSlurper().parseText(response.content).collect { it.name }
+                    def branches = new groovy.json.JsonSlurper().parseText(response.content).collect { it.name } */
+
+                    def gitURL = "https://api.github.com/repos/madpassion/springboot-jenkins/branches"
+                                        def command = "git ls-remote -h $gitURL"
+                                        def proc = command.execute()
+                                        proc.waitFor()
+                                        if (proc.exitValue() != 0) {
+                                            error "Error fetching branches: ${proc.err.text}"
+                                        }
+                                        def branches = proc.in.text.readLines().collect {
+                                            it.replaceAll(/[a-z0-9]*\trefs\/heads\//, '')
+                                        }
+                                        echo "Branches: ${branches.join(', ')}"
 
                     // Update the choice parameter with the fetched branches
                     properties([
